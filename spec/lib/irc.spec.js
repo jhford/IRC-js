@@ -1,29 +1,29 @@
 "use strict";
 
-const f       = require("util").format;
-const path    = require("path");
-const fs      = require("fs");
-const should  = require("should");
-const lib     = path.join(__dirname, "..", "..", "lib");
-const help    = require(path.join(__dirname, "..", "helpers"));
-const cs      = require(path.join(lib, "constants"));
-const irc     = require(path.join(lib, "irc"));
-const Client  = irc.Client;
-const server  = require(path.join("..", "server")).server;
-const bit     = help.bit;
-const conf    = help.conf;
-const COMMAND = cs.COMMAND;
-const EVENT   = cs.EVENT;
-const MODE    = cs.MODE;
-const REPLY   = cs.REPLY;
-const STATUS  = irc.STATUS;
+var f       = require("util").format;
+var path    = require("path");
+var fs      = require("fs");
+var should  = require("should");
+var lib     = path.join(__dirname, "..", "..", "lib");
+var help    = require(path.join(__dirname, "..", "helpers"));
+var cs      = require(path.join(lib, "constants"));
+var irc     = require(path.join(lib, "irc"));
+var Client  = irc.Client;
+var server  = require(path.join("..", "server")).server;
+var bit     = help.bit;
+var conf    = help.conf;
+var COMMAND = cs.COMMAND;
+var EVENT   = cs.EVENT;
+var MODE    = cs.MODE;
+var REPLY   = cs.REPLY;
+var STATUS  = irc.STATUS;
 
 describe("irc", function() {
   describe("Client", function() {
     describe("send", function() {
       bit("should truncate messages to 512 bytes (including \"\\r\\n\")", function(done) {
-        const longAssString = ":" + Array(601).join("*");
-        const msg = irc.message(COMMAND.PRIVMSG, ["#longassstrings", longAssString]);
+        var longAssString = ":" + Array(601).join("*");
+        var msg = irc.message(COMMAND.PRIVMSG, ["#longassstrings", longAssString]);
         server.on("message", function ok(d) {
           if (/PRIVMSG #longassstrings/.test(d)) {
             server.removeListener("message", ok);
@@ -49,7 +49,7 @@ describe("irc", function() {
       });
 
       bit("should reconnect after having been disconnected", function(done) {
-        const bot = this;
+        var bot = this;
         bot.disconnect();
         bot.connect(function(b) {
           b.should.be.an.instanceof(Client);
@@ -63,7 +63,7 @@ describe("irc", function() {
       });
 
       bit("should update server name on 004", function(done) {
-        const bot = this;
+        var bot = this;
         function handler(a) {
           bot.server.name.should.equal("holmes.freenode.net");
           bot.server.name = conf.server.address;
@@ -78,8 +78,8 @@ describe("irc", function() {
 
     describe("nick", function() {
       bit("should change the nickname", function(done) {
-        const bot = this;
-        const prevNick = bot.user.nick;
+        var bot = this;
+        var prevNick = bot.user.nick;
         server.recite(f(":%s@foo.com NICK changeling\r\n", prevNick));
         setTimeout(function() {
           bot.user.nick.should.equal("changeling");
@@ -91,7 +91,7 @@ describe("irc", function() {
 
     describe("quit", function() {
       bit("should quit without a message", function(done) {
-        const bot = this;
+        var bot = this;
         server.on("message", function ok(m) {
           if (!/QUIT/.test(m)) {
             return;
@@ -104,8 +104,8 @@ describe("irc", function() {
       });
 
       bit("should quit with a message", function(done) {
-        const msg = "QUIT :LOL BAI\r\n";
-        const bot = this;
+        var msg = "QUIT :LOL BAI\r\n";
+        var bot = this;
         server.on("message", function ok(m) {
           if (!/QUIT/.test(m)) {
             return;
@@ -118,7 +118,7 @@ describe("irc", function() {
       });
 
       bit("should disconnect and end the socket", function(done) {
-        const bot = this;
+        var bot = this;
         server.on("end", function ok() {
           server.removeListener("message", ok);
           bot.connect(function() { done() });
@@ -129,7 +129,7 @@ describe("irc", function() {
 
     describe("setMode", function() {
       bit("should set various modes on the current user", function(done) {
-        const bot = this;
+        var bot = this;
         this.setMode("-o");
         server.on("message", function ok(m) {
           if (!/MODE/.test(m)) {
@@ -149,7 +149,7 @@ describe("irc", function() {
 
     describe("send", function() {
       bit("should send Message objects", function(done) {
-        const bot = this;
+        var bot = this;
         server.on("message", function ok(m) {
           if (!/PRIVMSG/.test(m)) {
             return;
@@ -164,7 +164,7 @@ describe("irc", function() {
       bit("should split long messages into multiple messages");
       /*  Must comment out to not break other tests :/
       bit("should split long messages into multiple messages", function(done) {
-        const longAssString = Array(501).join("*");
+        var longAssString = Array(501).join("*");
         let count = 0;
         server.on("message", function ok(m) {
           ++count;
@@ -184,8 +184,8 @@ describe("irc", function() {
 
     describe("channels", function() {
       bit("should let you add channels by name", function(done) {
-        const bot  = this;
-        const chan = this.join("#addchanname", function() {
+        var bot  = this;
+        var chan = this.join("#addchanname", function() {
           bot.channels.has(chan.id).should.equal(true);
           bot.channels.get(chan.id).should.equal(chan);
           done();
@@ -196,8 +196,8 @@ describe("irc", function() {
       });
 
       bit("should let you add Channel objects", function(done) {
-        const bot = this;
-        const chan = irc.channel("#addchanobj");
+        var bot = this;
+        var chan = irc.channel("#addchanobj");
         this.join(chan, function(ch) {
           bot.channels.has(irc.id("#addchanobj")).should.equal(true);
           bot.channels.get(irc.id("#addchanobj")).should.equal(chan);
@@ -210,8 +210,8 @@ describe("irc", function() {
       });
 
       bit("should let you remove channels by name", function(done) {
-        const chan = "#removechanname";
-        const bot  = this;
+        var chan = "#removechanname";
+        var bot  = this;
         bot.join(chan, function(ch) {
           bot.channels.has(irc.id(chan)).should.equal(true);
           server.on("message", function ok(m) {
@@ -231,8 +231,8 @@ describe("irc", function() {
       });
 
       bit("should let you remove Channel objects", function(done) {
-        const chan = new irc.Channel("#removechanobj");
-        const bot  = this;
+        var chan = new irc.Channel("#removechanobj");
+        var bot  = this;
         bot.join(chan, function(ch) {
           bot.channels.has(chan.id).should.equal(true);
           server.on("message", function ok(m) {
@@ -243,7 +243,7 @@ describe("irc", function() {
             m.should.equal(f("PART %s\r\n", chan));
           });
           bot.part(chan);
-          const handler = function(a) {
+          var handler = function(a) {
             bot.channels.has(chan.id).should.equal(false);
             bot.ignore(COMMAND.PART, handler);
           }
@@ -257,8 +257,8 @@ describe("irc", function() {
       });
 
       bit("should add people to its list of users, for various relevant messages", function(done) {
-        const bot  = this;
-        const chan = this.join("#addpeople");
+        var bot  = this;
+        var chan = this.join("#addpeople");
         server.recite(f(":%s!~a@b.c JOIN %s\r\n", this.user.nick, chan));
         // A name reply for a channel
         server.recite(f(":niven.freenode.net 353 %s @ %s :some +different @nicks\r\n",
@@ -280,8 +280,8 @@ describe("irc", function() {
       });
 
       bit("should remove people from its list of users", function(done) {
-        const chan = irc.channel("#removepeople");
-        const bot  = this;
+        var chan = irc.channel("#removepeople");
+        var bot  = this;
         chan.client = bot;
         chan.join();
         server.recite(f(":%s!~a@b.c JOIN %s\r\n", bot.user.nick, chan));
@@ -312,8 +312,8 @@ describe("irc", function() {
       });
 
       bit("should remove a channel if kicked from it", function(done) {
-        const bot  = this;
-        const chan = bot.join("#kickedfrom");
+        var bot  = this;
+        var chan = bot.join("#kickedfrom");
         server.recite(f(":%s!~a@b.c JOIN %s\r\n", bot.user.nick, chan));
         setTimeout(function() {
           bot.channels.has(irc.id("#kickedfrom")).should.equal(true);
@@ -326,10 +326,10 @@ describe("irc", function() {
       });
 
       bit("should create only one Person instance per user", function(done) {
-        const nick = "unique";
-        const bot  = this;
+        var nick = "unique";
+        var bot  = this;
         bot.join("#channelone")
-        const ch = bot.join("#channeltwo", function() {
+        var ch = bot.join("#channeltwo", function() {
           ch.people.get(irc.id(nick)).should.equal(
             bot.channels.get(irc.id("#channelone")).people.get(irc.id(nick)));
           done();
@@ -343,8 +343,8 @@ describe("irc", function() {
       });
 
       bit("should know that LOL[]\\~ is the same name as lol{}|^", function(done) {
-        const lol = "#LOL[]\\~";
-        const bot = this;
+        var lol = "#LOL[]\\~";
+        var bot = this;
         this.join(lol, function(ch) {
           bot.channels.has("#lol{}|^").should.equal(true);
           done();
@@ -355,9 +355,9 @@ describe("irc", function() {
       });
 
       bit("should rename the channel if forwarded", function(done) {
-        const c1 = irc.channel("#fwdfrom");
-        const c2 = irc.channel("#fwdto");
-        const bot = this;
+        var c1 = irc.channel("#fwdfrom");
+        var c2 = irc.channel("#fwdto");
+        var bot = this;
         this.join(c1, function(err, ch) {
           err.should.be.an.instanceof(Error);
           err.message.should.equal("Forwarding to another channel");
@@ -373,7 +373,7 @@ describe("irc", function() {
     });
 
     bit(f("should emit all events as a `%s` event with message as first parameter", EVENT.ANY), function(done) {
-      const bot = this;
+      var bot = this;
       function handler(msg) {
         msg.type.should.equal(COMMAND.PRIVMSG);
         bot.ignore(EVENT.ANY, handler);
@@ -386,7 +386,7 @@ describe("irc", function() {
 
   describe("network", function() {
     bit("should handle chopped up messages", function(done) {
-      const bot = this;
+      var bot = this;
       let got = 0;
       bot.match(COMMAND.PRIVMSG, function handler(msg) {
         if (msg.params[1] === ":Mad chopz") {
@@ -414,7 +414,7 @@ describe("irc", function() {
     });
 
     bit("should handle multiple messages in one packet", function(done) {
-      const bot = this;
+      var bot = this;
       let got = 0;
       bot.match(COMMAND.NOTICE, function handler(msg) {
         if (20 === ++got) {
@@ -429,7 +429,7 @@ describe("irc", function() {
     });
 
     bit("should forward errors to client", function(done) {
-      const bot = this;
+      var bot = this;
       let got = 0;
       bot.match(cs.EVENT.ERROR, function() {
         got++;

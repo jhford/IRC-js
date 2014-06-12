@@ -2,15 +2,15 @@
 
 "use strict";
 
-const path      = require("path");
-const should    = require("should");
-const lib       = path.join(__dirname, "..", "..", "lib");
-const logger    = require(path.join(lib, "logger"));
-const constants = require(path.join(lib, "constants"));
-const Logger    = logger.Logger;
-const LEVEL     = constants.LEVEL;
+var path      = require("path");
+var should    = require("should");
+var lib       = path.join(__dirname, "..", "..", "lib");
+var logger    = require(path.join(lib, "logger"));
+var constants = require(path.join(lib, "constants"));
+var Logger    = logger.Logger;
+var LEVEL     = constants.LEVEL;
 
-const l = logger.get("speclog", LEVEL.ALL);
+var l = logger.get("speclog", LEVEL.ALL);
 
 describe("logger", function() {
   describe("Logger", function() {
@@ -58,7 +58,7 @@ describe("logger", function() {
       });
 
       it("should not log anything if level is NONE", function() {
-        const before = logger._output.length;
+        var before = logger._output.length;
         l.level = LEVEL.NONE;
         l.log(LEVEL.INFO, "lol");
         l.log(LEVEL.ALL, "omg");
@@ -67,7 +67,7 @@ describe("logger", function() {
       });
 
       it("should log everything if level is ALL", function() {
-        const input = ["lol", "omg", "wtf", "bbq"];
+        var input = ["lol", "omg", "wtf", "bbq"];
         l.level = LEVEL.ALL;
         l.log(LEVEL.DEBUG, input[3]);
         l.log(LEVEL.INFO,  input[2]);
@@ -92,8 +92,8 @@ describe("logger", function() {
 
   describe("get", function() {
     it("should get a logger by name if it exists", function() {
-      const name = "exists";
-      const aLog = logger.get(name, LEVEL.ALL);
+      var name = "exists";
+      var aLog = logger.get(name, LEVEL.ALL);
       logger.get(name).should.equal(aLog);
       logger.get(name).level.should.equal(aLog.level);
     });

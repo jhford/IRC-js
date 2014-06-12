@@ -2,27 +2,27 @@
  *  The idea is to test against this as if it were a standard IRC server.
  *  Still quite some code away from that.
  */
-const net = require("net");
-const prs = require("../lib/parser");
+var net = require("net");
+var prs = require("../lib/parser");
 
-const MSG = /(.+)(\r\n)?/g;
-const SEP = "\r\n";
+var MSG = /(.+)(\r\n)?/g;
+var SEP = "\r\n";
 
-const log = {
+var log = {
   received: [],
   sent: []
 };
 
-const mockServer = new net.Server(function(s) {
-  const buf = [];
+var mockServer = new net.Server(function(s) {
+  var buf = [];
 
   s.setEncoding("ascii");
   mockServer.received = [];
   mockServer.sent = [];
 
   s.on("data", function(data) {
-    const parts = data.match(MSG);
-    const out = [];
+    var parts = data.match(MSG);
+    var out = [];
     var i = 0;
     var l = 0;
     var msg = null;
@@ -60,7 +60,7 @@ mockServer.recite = function(stuff) {
 }
 
 function onJoin(msg) {
-  const ch = prs.parseChannel(msg.params[0]);
+  var ch = prs.parseChannel(msg.params[0]);
 }
 
 exports.server  = mockServer;
